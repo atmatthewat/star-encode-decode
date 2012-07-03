@@ -404,16 +404,14 @@ int star_encoder_set(star_encoder_t *encoder, star_format format, int unitID, in
 int star_encoder_get_samples(star_encoder_t *encoder, star_sample_t *buffer, int bufferLength)
 {
 	star_int_t i;
-	if(encoder->state == 0)
+
+	if(!encoder)
 		return -1;
 
-	for(i=0; i<bufferLength; i++)
+
+	for(i=0; encoder->state && i<bufferLength; i++)
 		buffer[i] = _next_sample(encoder);
 
-
-	if(encoder->state == 0)
-		return 0;
-	else
-		return 1;
+	return i;
 }
 
