@@ -408,7 +408,6 @@ int star_encoder_get_samples(star_encoder_t *encoder, star_sample_t *buffer, int
 	if(!encoder)
 		return -1;
 
-
 	for(i=0; encoder->state && i<bufferLength; i++)
 		buffer[i] = _next_sample(encoder);
 
