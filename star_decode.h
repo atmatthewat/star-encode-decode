@@ -40,6 +40,13 @@
 #define NDEC 4
 #define THINCR (TWOPI / 8)
 
+/*
+ callback function is called based on format set when callback installed
+*/
+
+typedef void (*star_decoder_callback_t)(int unitID, int tag, int status, int message);
+
+
 typedef struct {
 	star_float_t sampleRate;
 	star_u32_t phsr[NDEC];
@@ -57,12 +64,65 @@ typedef struct {
 	star_int_t bitcount[NDEC];
 	star_u32_t lastBits0;
 	star_int_t valid;
+	star_decoder_callback_t callback;
+	star_format callbackFormat;
 } star_decoder_t;
+
+
+/*
+ star_decoder_new
+  create a new star_decoder_t object
+
+  parameters: int sampleRate - the sampling rate in Hz
+
+  returns: a star_decoder_t object or null if failure
+ */
 
 star_decoder_t * star_decoder_new(int sampleRate);
 
+/*
+ star_decoder_process_samples
+  process incoming samples using a star_decoder_t object
+
+  parameters: star_deocder_t *decoder - pointer to the decoder object
+              star_sample_t *samples  - pointer to samples (in format set in star_types.h)
+              int sampleCount         - count of number of samples in the buffer
+
+  returns: 0 if more samples are needed
+          -1 if an error occurs
+           1 if a decoded packet is available to read (assuming no callback set)
+*/
+
 int star_decoder_process_samples(star_decoder_t *decoder, star_sample_t *samples, int sampleCount);  // 8 bit version
 
+
+/*
+ star_decoder_get
+  retrieve last successfully decoded packet from decoder object
+
+  parameters: star_decoder_t *decoder - pointer to the decoder object
+              star_format format      - format to apply to interpret bits
+              int *unitID             - pointer to where to store "unid ID"
+              int *tag                - pointer to where to store "tag"
+              int *status             - pointer to where to store "status"
+              int *message            - pointer to where to store "message"
+
+  returns -1 if failure, 0 otherwise
+*/
+
 int star_decoder_get(star_decoder_t *decoder, star_format format, int *unitID, int *tag, int *status, int *message);
+
+/*
+ star_decoder_set_callback
+  set a callback function to be called upon successful decode
+  if this is set, the function star_decoder_get will no longer be functional,
+  instead the callback function is called immediately when a successful decode happens
+  from within the calling context of star_decoder_process_samples()
+  the callback function will use the format set with callbackFormat
+
+  returns -1 if failure, 0 otherwise
+*/
+
+ int star_decoder_set_callback(star_decoder_t *decoder, star_format callbackFormat, star_decoder_callback_t callbackFunction);
 
 #endif

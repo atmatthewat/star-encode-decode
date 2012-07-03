@@ -251,6 +251,8 @@ star_decoder_t * star_decoder_new(int sampleRate)
 			dec->theta[i] = THINCR * ((star_float_t)i);
 			_reset_decoder(dec, i);
 		}
+
+		dec->callback = (star_decoder_callback_t)0;
 	}
 	return dec;
 }
@@ -260,6 +262,9 @@ int star_decoder_process_samples(star_decoder_t *decoder, star_sample_t *samples
 	star_int_t i;
 	star_float_t value;
 	star_sample_t sample;
+
+	if(!decoder)
+		return -1;
 
 	for(i=0; i<sampleCount; i++)
 	{
@@ -278,12 +283,25 @@ int star_decoder_process_samples(star_decoder_t *decoder, star_sample_t *samples
 #endif
 
 		_process_sample(decoder, value);
+
+		if(decoder->valid && decoder->callback)
+		{
+			int unitID, tag, status, message;
+
+			if(1 == star_decoder_get(decoder, decoder->callbackFormat, &unitID, &tag, &status, &message))
+			{
+				decoder->callback(unitID, tag, status, message);
+			}
+		}
 	}
 	return decoder->valid;
 }
 
 int star_decoder_get(star_decoder_t *decoder, star_format format, int *_unitID, int *_tag, int *_status, int *_message)
 {
+	if(!decoder)
+		return -1;
+
 	if(decoder->valid)
 	{
 		int unitID = (decoder->lastBits0 >> 16) & 0x07ff;
@@ -366,3 +384,14 @@ int star_decoder_get(star_decoder_t *decoder, star_format format, int *_unitID, 
 
 	return 0;
 }
+
+ int star_decoder_set_callback(star_decoder_t *decoder, star_format callbackFormat, star_decoder_callback_t callbackFunction)
+ {
+ 	if(!decoder)
+ 		return -1;
+
+ 	decoder->callback = callbackFunction;
+ 	decoder->callbackFormat = callbackFormat;
+
+ 	return 0;
+ }

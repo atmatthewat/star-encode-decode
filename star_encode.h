@@ -54,9 +54,46 @@ typedef struct {
 	star_int_t lastbit;
 } star_encoder_t;
 
+/*
+ star_encoder_new
+  create a new star_encoder_t object
+
+  parameters: int sampleRate - the sampling rate in Jz
+
+  returns: a star_decoder_t object or null if failure
+*/
+
 star_encoder_t *star_encoder_new(int sampleRate);
 
+/*
+ star_encoder_set
+ set up a star packet for transmission
+
+ parameters: star_encoder_t *encoder - pointer to the encoder object
+             star_format format      - format for interpretation of bits
+             int unitID              - the "unit ID"
+             int tag                 - the "tag"
+             int status              - the "status"
+             int message             - the "message"
+
+  returns: -1 for error, 0 otherwise
+*/
+
 int star_encoder_set(star_encoder_t *encoder, star_format format, int unitID, int tag, int status, int message);
+
+/*
+ star_encoder_get_samples
+ get generated output audio samples from encoder
+
+ parameters: star_encoder_t *encoder - pointer to the encoder object
+             star_sample_t *buffer   - the sample buffer to write into
+             int bufferLength        - the size (in samples) of the buffer
+
+ returns: -1 for error, otherwise returns the number of samples written into the buffer
+            (which will be equal to the bufferSize unless the end has been reached, in which
+            case the last block may be less than bufferSize and all subsequent calls will
+            return zero, until a new packet is loaded for transmission)
+*/
 
 int star_encoder_get_samples(star_encoder_t *encoder, star_sample_t *buffer, int bufferLength);
 
