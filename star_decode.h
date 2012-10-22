@@ -36,6 +36,7 @@
 #define __STAR_DECODE_H__
 
 #include "star_types.h"
+#include "star_common.h"
 
 #define NDEC 4
 #define THINCR (TWOPI / 8)
