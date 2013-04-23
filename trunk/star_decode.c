@@ -288,7 +288,7 @@ int star_decoder_process_samples(star_decoder_t *decoder, star_sample_t *samples
 		{
 			int unitID, tag, status, message;
 
-			if(1 == star_decoder_get(decoder, decoder->callbackFormat, &unitID, &tag, &status, &message))
+			if(-1 != star_decoder_get(decoder, decoder->callbackFormat, &unitID, &tag, &status, &message))
 			{
 				decoder->callback(unitID, tag, status, message);
 			}

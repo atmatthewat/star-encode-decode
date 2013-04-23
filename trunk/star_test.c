@@ -39,7 +39,7 @@
 #include "star_decode.h"
 #include "star_encode.h"
 
-#define SAMPLERATE 16000.0
+#define SAMPLERATE 48000.0
 
 int main(int argc, char **argv)
 {
