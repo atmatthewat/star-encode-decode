@@ -45,7 +45,7 @@
  callback function is called based on format set when callback installed
 */
 
-typedef void (*star_decoder_callback_t)(int unitID, int tag, int status, int message);
+typedef void (*star_decoder_callback_t)(int unitID, int tag, int status, int message, void *context);
 
 
 typedef struct {
@@ -66,7 +66,8 @@ typedef struct {
 	star_u32_t lastBits0;
 	star_int_t valid;
 	star_decoder_callback_t callback;
-	star_format callbackFormat;
+	star_format callback_format;
+	void * callback_context;
 } star_decoder_t;
 
 
@@ -119,11 +120,13 @@ int star_decoder_get(star_decoder_t *decoder, star_format format, int *unitID, i
   if this is set, the function star_decoder_get will no longer be functional,
   instead the callback function is called immediately when a successful decode happens
   from within the calling context of star_decoder_process_samples()
-  the callback function will use the format set with callbackFormat
+  the callback function will use the format set with callback_format
+
+  the callback function will be called with (void *)context as its last parameter
 
   returns -1 if failure, 0 otherwise
 */
 
- int star_decoder_set_callback(star_decoder_t *decoder, star_format callbackFormat, star_decoder_callback_t callbackFunction);
+ int star_decoder_set_callback(star_decoder_t *decoder, star_format callback_format, star_decoder_callback_t callbackFunction, void *context);
 
 #endif
