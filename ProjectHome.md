@@ -1,0 +1,1 @@
+Software modem to encode and decode a specific format of 1600 Hz carrier, 400 bps data burst. Encodes to and decodes from a set of audio samples. Portable C code.
